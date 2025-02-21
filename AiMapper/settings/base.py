@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'image_extractor'
+    'image_extractor',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,24 @@ INITIAL_AGREEMENT_TYPE_NAMES = []
 
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", '')
+
+
+# Key cloak settings
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.keycloak.KeycloakOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+API_SERVER_URL = 'DJANGO_SERVER_BASE_URL'
+YOUR_REALM_NAME = 'KEYCLOAK_REALM_NAME'
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+# Add you connection settings here
+SOCIAL_AUTH_KEYCLOAK_KEY = 'KEYCLOAK_CLIENT_NAME'
+SOCIAL_AUTH_KEYCLOAK_SECRET = 'KEYCLOAK_CLIENT_SECRET'
+SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = 'PULBLIC_KEY'
+SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = \
+    f'{API_SERVER_URL}/realms/{YOUR_REALM_NAME}/protocol/openid-connect/auth'
+SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = \
+    f'{API_SERVER_URL}/realms/{YOUR_REALM_NAME}/protocol/openid-connect/token'
