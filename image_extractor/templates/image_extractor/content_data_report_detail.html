@@ -28,11 +28,15 @@
 
 <a href="{% url 'content_data_report_list' %}">Back to reports</a>
 
-<h2>Extracted Data Report</h2>
-
-{% if screenshot_url %}
-    <h3>Screenshot</h3>
-    <img src="{{ screenshot_url }}" alt="Screenshot" style="max-width: 100%; height: auto;">
+<h3>Captured Resource</h3>
+{% if recording_url %}
+    <video controls loop autoplay muted style="max-width: 50%; height: auto; margin-bottom: 10px;">
+        <source src="{{ recording_url }}" type="video/webm">
+        Your browser does not support the video tag.
+    </video>
 {% else %}
-    <p>No screenshot available.</p>
+    <p>No recording is available.</p>
 {% endif %}
+
+
+<a href="{% url 'content_data_report_list' %}">Back to reports</a>

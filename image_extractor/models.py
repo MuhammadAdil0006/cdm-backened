@@ -3,7 +3,8 @@ from django.db import models
 class ContentDataReport(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     ai_response = models.JSONField(blank=True, null=True)
-    
+    recording = models.FileField(upload_to="uploads/recordings/", blank=True, null=True)
+
     def __str__(self):
         return f"ContentDataReport(id={self.id}, name={self.name})"
 

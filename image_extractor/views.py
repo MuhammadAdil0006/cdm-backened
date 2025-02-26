@@ -15,7 +15,7 @@ class ContentDataReportView(generics.CreateAPIView):
     permission_classes = ()
 
     def create(self, request, *args, **kwargs):
-        if 'screenshots_in_parts' not in request.FILES and 'full_length_screenshot' not in request.FILES:
+        if 'screenshots_in_parts' not in request.FILES:
             return Response(
                 {"error": "No files provided."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -28,14 +28,6 @@ class ContentDataReportView(generics.CreateAPIView):
                 screenshot=file,
                 screenshot_type=ContentDataReportImage.PARTIAL
             )
-
-        full_screenshot = request.FILES.get("full_length_screenshot")
-        if full_screenshot:
-            ContentDataReportImage.objects.create(
-                content_data_report=content_data_report,
-                screenshot=full_screenshot,
-                screenshot_type=ContentDataReportImage.FULL
-            )
         process_screenshot.delay(content_data_report.id)
         serializer = self.get_serializer(content_data_report)
         return Response(
@@ -45,6 +37,30 @@ class ContentDataReportView(generics.CreateAPIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ContentDataReportUpdateRecordingView(generics.UpdateAPIView):
+    queryset = ContentDataReport.objects.all()
+    serializer_class = ContentDataReportSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            content_data_report = self.get_object()
+        except ContentDataReport.DoesNotExist:
+            return Response({"error": "ContentDataReport not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if 'recording' not in request.FILES:
+            return Response({"error": "No recording file provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        content_data_report.recording = request.FILES['recording']
+        content_data_report.save()
+
+        serializer = self.get_serializer(content_data_report)
+        return Response({
+            "message": "Recording uploaded successfully!",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 def content_data_report_list(request):
@@ -58,7 +74,7 @@ def content_data_report_detail(request, pk):
 
     # Extract data from the serializer
     serialized_data = serializer.data
-    screenshot_url = serialized_data.get("full_length_screenshot")
+    recording = serialized_data.get("recording")
     ai_response = serialized_data.get("ai_response")
 
     # Handle AI response parsing
@@ -75,5 +91,5 @@ def content_data_report_detail(request, pk):
     return render(
         request, 
         "image_extractor/content_data_report_detail.html", 
-        {"data": ai_data, "screenshot_url": screenshot_url}
+        {"data": ai_data, "recording_url": recording}
     )
