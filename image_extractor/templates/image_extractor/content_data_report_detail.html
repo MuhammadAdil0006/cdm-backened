@@ -1,0 +1,42 @@
+
+
+
+<h3>Extracted Data</h3>
+
+{% if data %}
+    <table border="1">
+        <thead>
+            <tr>
+                {% for key in data.0.keys %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for value in row.values %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No extracted data available.</p>
+{% endif %}
+
+<a href="{% url 'content_data_report_list' %}">Back to reports</a>
+
+<h3>Captured Resource</h3>
+{% if recording_url %}
+    <video controls loop autoplay muted style="max-width: 50%; height: auto; margin-bottom: 10px;">
+        <source src="{{ recording_url }}" type="video/webm">
+        Your browser does not support the video tag.
+    </video>
+{% else %}
+    <p>No recording is available.</p>
+{% endif %}
+
+
+<a href="{% url 'content_data_report_list' %}">Back to reports</a>

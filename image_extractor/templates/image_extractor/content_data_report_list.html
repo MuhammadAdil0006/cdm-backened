@@ -1,0 +1,8 @@
+
+<h2>AI Extracted Data Reports</h2>
+
+<ul>
+    {% for report in reports %}
+        <li><a href="{% url 'content_data_report_detail' report.id %}">Report {{ report.id }}</a></li>
+    {% endfor %}
+</ul>

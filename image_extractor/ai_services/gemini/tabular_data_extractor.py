@@ -28,13 +28,24 @@ class GeminiTabularDataExtractor:
         print(f"Uploaded file '{file.display_name}' as: {file.uri}")
         return file
 
-    def extract_data(self, file_path):
-        """Processes an image and extracts tabular data."""
-        uploaded_file = self.upload_file(file_path)
+    def extract_data(self, file_paths):
+        """
+        Processes multiple images and extracts tabular data.
+        :param file_paths: List of image file paths
+        :return: Dictionary of extracted data for each image
+        """
+        if not isinstance(file_paths, list):
+            raise ValueError("file_paths must be a list of image paths.")
 
+        uploaded_files = [self.upload_file(path) for path in file_paths]
+
+        # Start a chat session and send all images in a single message
         chat_session = self.model.start_chat(
-            history=[{"role": "user", "parts": [uploaded_file]}]
+            history=[{"role": "user", "parts": uploaded_files}]
         )
 
-        response = chat_session.send_message("Extract tabular data from this image.")
+        response = chat_session.send_message(
+            "Extract tabular data from these images and return structured results."
+        )
+
         return response.text
