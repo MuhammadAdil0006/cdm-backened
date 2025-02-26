@@ -76,14 +76,15 @@ def content_data_report_detail(request, pk):
     serialized_data = serializer.data
     recording = serialized_data.get("recording")
     ai_response = serialized_data.get("ai_response")
+    ai_response_generation_status = serialized_data.get("ai_response_generation_status")
 
     # Handle AI response parsing
     if isinstance(ai_response, str):
         try:
-            ai_data = json.loads(ai_response)  # Convert JSON string to Python list/dict
+            ai_data = json.loads(ai_response)
         except json.JSONDecodeError:
             ai_data = []
-    elif isinstance(ai_response, (list, dict)):  # Ensure ai_response can be iterated over
+    elif isinstance(ai_response, (list, dict)):
         ai_data = ai_response
     else:
         ai_data = []
@@ -91,5 +92,5 @@ def content_data_report_detail(request, pk):
     return render(
         request, 
         "image_extractor/content_data_report_detail.html", 
-        {"data": ai_data, "recording_url": recording}
+        {"data": ai_data, "recording_url": recording, "ai_response_generation_status": ai_response_generation_status}
     )
